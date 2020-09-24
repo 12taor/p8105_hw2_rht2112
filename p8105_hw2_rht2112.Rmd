@@ -1,0 +1,12 @@
+---
+title: "p8105 hw2 rht2112"
+output: github_document
+---
+
+# Problem 1
+
+```{r}
+
+```
+
+# Problem 2
