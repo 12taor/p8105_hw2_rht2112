@@ -70,3 +70,17 @@ month_df <-
 ```
 
 This dataset contains information from the Mr. Trashwheel trash collector in Baltimore, Maryland. As trash enters the inner harbor, the trashwheel collects that trash, and stores it in a dumpster. The dataset contains information on year, month, and trash collected, including some specific kinds of trash. There are a total of `r nrow(trashwheel_df)` rows in our final dataset. Additional data sheets include monthly precipitation data. The total precipitation in 2018 was `r   filter(month_df, year == "2018") %>% pull(total) %>% sum()`. The median number of sports balls in a dumpster in 2017 was `r filter(trashwheel_df, year == 2017) %>% pull(sports_balls) %>% median()`.
+
+# Problem 2
+
+```{r}
+nycsubway_df <- 
+  read_csv(
+    "./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+  janitor::clean_names() %>% 
+  select(line:entry, vending, ada) %>% 
+  mutate(
+    entry = 
+      ifelse(entry == "YES", TRUE, FALSE))
+```
+
