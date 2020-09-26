@@ -90,6 +90,8 @@ nycsubway_df <-
 
 This dataset has `r ncol(nycsubway_df)` columns and `r nrow(nycsubway_df)` rows, and includes variables line, station name, station latitude, station longitude, routes served (route1-route11), entry, entrance type, vending, and ADA compliance. For data cleaning, I used the function clean_names in the janitor package to make the column names more readable in R, I selected only the columns for variables that were relevant for this problem, and I used the mutate function and ifelse function to change the entry column from character to logical. Since a future question asks about vending, I used the same method to change the vending column from character to logical. These data are tidy.
 
+How many distinct stations are there? How many of them are ADA compliant? What proportion of station entrances/exits without vending allow entrance?
+
 ```{r}
 ada_stations <- 
   distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
@@ -106,3 +108,8 @@ entry_no_vending <-
 ```
 
 There are `r nrow(distinct(nycsubway_df, line, station_name))` distinct stations, of which `r nrow(ada_stations)` are ADA compliant. The proportion of station entrances/exits without vending that allow entrance is `r entry_no_vending/no_vending`.
+
+A train info - what do they mean by "reformat data so that route number and route name arrer distinct variables?"
+
+# Problem 3
+
