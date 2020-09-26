@@ -73,6 +73,8 @@ This dataset contains information from the Mr. Trashwheel trash collector in Bal
 
 # Problem 2
 
+Read and clean NYC subway data.
+
 ```{r}
 nycsubway_df <- 
   read_csv(
@@ -81,6 +83,26 @@ nycsubway_df <-
   select(line:entry, vending, ada) %>% 
   mutate(
     entry = 
-      ifelse(entry == "YES", TRUE, FALSE))
+      ifelse(entry == "YES", TRUE, FALSE),
+    vending = 
+      ifelse(vending == "YES", TRUE, FALSE))
 ```
 
+This dataset has `r ncol(nycsubway_df)` columns and `r nrow(nycsubway_df)` rows, and includes variables line, station name, station latitude, station longitude, routes served (route1-route11), entry, entrance type, vending, and ADA compliance. For data cleaning, I used the function clean_names in the janitor package to make the column names more readable in R, I selected only the columns for variables that were relevant for this problem, and I used the mutate function and ifelse function to change the entry column from character to logical. Since a future question asks about vending, I used the same method to change the vending column from character to logical. These data are tidy.
+
+```{r}
+ada_stations <- 
+  distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
+  filter(ada == TRUE)
+
+no_vending <- 
+  filter(nycsubway_df, vending == FALSE) %>% 
+  nrow()
+
+entry_no_vending <- 
+  filter(nycsubway_df, vending == FALSE) %>% 
+  filter(entry == TRUE) %>% 
+  nrow()
+```
+
+There are `r nrow(distinct(nycsubway_df, line, station_name))` distinct stations, of which `r nrow(ada_stations)` are ADA compliant. The proportion of station entrances/exits without vending that allow entrance is `r entry_no_vending/no_vending`.
