@@ -113,3 +113,27 @@ A train info - what do they mean by "reformat data so that route number and rout
 
 # Problem 3
 
+Read in and clean pols-month.csv
+
+```{r}
+
+pols_month_df <- read_csv(
+  "./data/fivethirtyeight_datasets/pols-month.csv") %>% 
+    separate(mon, into = c("year", "month", "day"), sep = ) %>% 
+    mutate(
+      month = 
+        replace(month, 
+                month == c('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'), 
+                c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"))
+    ) %>% 
+  relocate(year, month, prez_gop, prez_dem) %>% 
+  pivot_longer(
+    prez_gop:prez_dem,
+    names_to = "president",
+    names_prefix = "prez_",
+    values_to = "prez_value") %>%
+  filter(prez_value == 1) %>% 
+  select(-day, -prez_value)
+
+```
+
