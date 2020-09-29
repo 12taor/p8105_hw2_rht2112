@@ -123,9 +123,41 @@ pols_month_df <- read_csv(
     mutate(
       month = 
         replace(month, 
-                month == c('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'), 
-                c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"))
-    ) %>% 
+                month == '01', "January"),
+      month = 
+        replace(month,
+                month == '02', "February"),
+      month =
+        replace(month,
+                month == '03', "March"),
+      month = 
+        replace(month,
+                month == '04', "April"),
+      month =
+        replace(month,
+                month == '05', "May"),
+      month =
+        replace(month,
+                month == '06', "June"),
+      month =
+        replace(month,
+                month == '07', "July"),
+      month = 
+        replace(month,
+                month == '08', "August"),
+      month = 
+        replace(month,
+                month == '09', "September"),
+      month =
+        replace(month,
+                month == '10', "October"),
+      month =
+        replace(month,
+                month == '11', "November"),
+      month =
+        replace(month,
+                month == '12', "December")
+        ) %>% 
   relocate(year, month, prez_gop, prez_dem) %>% 
   pivot_longer(
     prez_gop:prez_dem,
@@ -135,5 +167,53 @@ pols_month_df <- read_csv(
   filter(prez_value == 1) %>% 
   select(-day, -prez_value)
 
+```
+
+Read in and clean snp.csv
+
+```{r}
+snp_df <- read_csv(
+  "./data/fivethirtyeight_datasets/snp.csv") %>% 
+  separate(date, into = c("month", "day", "year"), sep = ) %>% 
+  mutate(
+      month = 
+        replace(month, 
+                month == '1', "January"),
+      month = 
+        replace(month,
+                month == '2', "February"),
+      month =
+        replace(month,
+                month == '3', "March"),
+      month = 
+        replace(month,
+                month == '4', "April"),
+      month =
+        replace(month,
+                month == '5', "May"),
+      month =
+        replace(month,
+                month == '6', "June"),
+      month =
+        replace(month,
+                month == '7', "July"),
+      month = 
+        replace(month,
+                month == '8', "August"),
+      month = 
+        replace(month,
+                month == '9', "September"),
+      month =
+        replace(month,
+                month == '10', "October"),
+      month =
+        replace(month,
+                month == '11', "November"),
+      month =
+        replace(month,
+                month == '12', "December")
+        ) %>% 
+  select(-day) %>% 
+  relocate(year, month)
 ```
 
