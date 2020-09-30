@@ -88,28 +88,11 @@ nycsubway_df <-
       ifelse(vending == "YES", TRUE, FALSE))
 ```
 
-This dataset has `r ncol(nycsubway_df)` columns and `r nrow(nycsubway_df)` rows, and includes variables line, station name, station latitude, station longitude, routes served (route1-route11), entry, entrance type, vending, and ADA compliance. For data cleaning, I used the function clean_names in the janitor package to make the column names more readable in R, I selected only the columns for variables that were relevant for this problem, and I used the mutate function and ifelse function to change the entry column from character to logical. Since a future question asks about vending, I used the same method to change the vending column from character to logical. These data are tidy.
-
-How many distinct stations are there? How many of them are ADA compliant? What proportion of station entrances/exits without vending allow entrance?
-
-```{r eval=FALSE, include=FALSE}
-ada_stations <- 
-  distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
-  filter(ada == TRUE)
-
-no_vending <- 
-  filter(nycsubway_df, vending == FALSE) %>% 
-  nrow()
-
-entry_no_vending <- 
-  filter(nycsubway_df, vending == FALSE) %>% 
-  filter(entry == TRUE) %>% 
-  nrow()
-```
+This dataset has `r ncol(nycsubway_df)` columns and `r nrow(nycsubway_df)` rows, and includes variables line, station name, station latitude, station longitude, routes served (route1-route11), entry, entrance type, vending, and ADA compliance. For data cleaning, I used the function clean_names in the janitor package to make the column names more readable in R, I selected only the columns for variables that were relevant for this problem, and I used the mutate function and ifelse function to change the entry column from character to logical. Since a future question asks about vending, I used the same method to change the vending column from character to logical. These data are cleaner than before, but they are not tidy yet. They would be tidier if we could condense the routes so that we did not have 11 columns for route1 through route11, and instead could have one column for route number (1-11), and another for route name (A, N, R, etc.).
 
 There are `r nrow(distinct(nycsubway_df, line, station_name))` distinct stations, of which `r distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% filter(ada == TRUE) %>% nrow()` are ADA compliant. The proportion of station entrances/exits without vending that allow entrance is `r (filter(nycsubway_df, vending == FALSE) %>% filter(entry == TRUE) %>% nrow())/(filter(nycsubway_df, vending == FALSE) %>% nrow())`.
 
-Reformat data so that route number and route name are distinct variables
+Reformat data so that route number and route name are distinct variables:
 
 ```{r}
 
@@ -126,17 +109,9 @@ nycsubway_df <-
   pivot_longer(
     route1:route11,
     names_to = "route_number",
+    names_prefix = "route",
     values_to = "route_name"
   )
-
-#A_stations <- 
-#  distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
-#  filter(route_name == 'A')
-
-#ada_stations <- 
-#  distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
-#  filter(route_name == 'A') %>% 
-#  filter(ada == TRUE)
 
 ```
 
@@ -151,44 +126,10 @@ Read in and clean pols-month.csv
 pols_df <- read_csv(
   "./data/fivethirtyeight_datasets/pols-month.csv") %>% 
     separate(mon, into = c("year", "month", "day"), sep = ) %>% 
-    mutate(
-      month = 
-        replace(month, 
-                month == '01', "January"),
-      month = 
-        replace(month,
-                month == '02', "February"),
-      month =
-        replace(month,
-                month == '03', "March"),
-      month = 
-        replace(month,
-                month == '04', "April"),
-      month =
-        replace(month,
-                month == '05', "May"),
-      month =
-        replace(month,
-                month == '06', "June"),
-      month =
-        replace(month,
-                month == '07', "July"),
-      month = 
-        replace(month,
-                month == '08', "August"),
-      month = 
-        replace(month,
-                month == '09', "September"),
-      month =
-        replace(month,
-                month == '10', "October"),
-      month =
-        replace(month,
-                month == '11', "November"),
-      month =
-        replace(month,
-                month == '12', "December")
-        ) %>% 
+  mutate(
+    month = 
+      as.integer(month)
+  ) %>% 
   relocate(year, month, prez_gop, prez_dem) %>% 
   pivot_longer(
     prez_gop:prez_dem,
@@ -197,6 +138,18 @@ pols_df <- read_csv(
     values_to = "prez_value") %>%
   filter(prez_value == 1) %>% 
   select(-day, -prez_value)
+
+month_df <- 
+  tibble(
+    month = 01:12,
+    month_name = month.name
+  )
+
+pols_df <- 
+  left_join(pols_df, month_df, by = "month") %>% 
+  select(-month) %>% 
+  rename(month = month_name) %>% 
+  relocate(year, month)
 
 ```
 
@@ -207,45 +160,23 @@ snp_df <- read_csv(
   "./data/fivethirtyeight_datasets/snp.csv") %>% 
   separate(date, into = c("month", "day", "year"), sep = ) %>% 
   mutate(
-      month = 
-        replace(month, 
-                month == '1', "January"),
-      month = 
-        replace(month,
-                month == '2', "February"),
       month =
-        replace(month,
-                month == '3', "March"),
-      month = 
-        replace(month,
-                month == '4', "April"),
-      month =
-        replace(month,
-                month == '5', "May"),
-      month =
-        replace(month,
-                month == '6', "June"),
-      month =
-        replace(month,
-                month == '7', "July"),
-      month = 
-        replace(month,
-                month == '8', "August"),
-      month = 
-        replace(month,
-                month == '9', "September"),
-      month =
-        replace(month,
-                month == '10', "October"),
-      month =
-        replace(month,
-                month == '11', "November"),
-      month =
-        replace(month,
-                month == '12', "December")
-        ) %>% 
-  select(-day) %>% 
+        as.integer(month)
+  ) %>% 
+  select(-day)
+
+month_df <- 
+  tibble(
+    month = 1:12,
+    month_name = month.name
+  )
+
+snp_df <- 
+  left_join(snp_df, month_df, by = "month") %>% 
+  select(-month) %>% 
+  rename(month = month_name) %>% 
   relocate(year, month)
+
 ```
 
 Read in and clean unemployment.csv
@@ -257,48 +188,25 @@ unemployment_df <- read_csv(
     Jan:Dec,
     names_to = "month",
     values_to = "unemployment"
+  )
+
+month_df <- 
+  tibble(
+    month = month.abb,
+    month_name = month.name
+  )
+
+unemployment_df <- 
+  left_join(unemployment_df, month_df, by = "month") %>% 
+  select(-month) %>% 
+  rename(month = month_name) %>% 
+  mutate(
+    Year = 
+      as.character(Year)
   ) %>% 
-    mutate(
-      month = 
-        replace(month,
-                month == "Jan", "January"),
-      month = 
-        replace(month,
-                month == "Feb", "February"),
-      month =
-        replace(month,
-                month == "Mar", "March"),
-      month = 
-        replace(month,
-                month == "Apr", "April"),
-      month =
-        replace(month,
-                month == "May", "May"),
-      month =
-        replace(month,
-                month == "Jun", "June"),
-      month =
-        replace(month,
-                month == "Jul", "July"),
-      month = 
-        replace(month,
-                month == "Aug", "August"),
-      month = 
-        replace(month,
-                month == "Sep", "September"),
-      month =
-        replace(month,
-                month == "Oct", "October"),
-      month =
-        replace(month,
-                month == "Nov", "November"),
-      month =
-        replace(month,
-                month == "Dec", "December"),
-      Year = 
-        as.character(Year)
-        ) %>% 
-  rename(year = Year)
+  rename(year = Year) %>% 
+  relocate(year, month)
+
 ```
 
 Join datasets snp, pols, and unemployment.
