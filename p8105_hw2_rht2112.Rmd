@@ -149,6 +149,10 @@ pols_df <-
   left_join(pols_df, month_df, by = "month") %>% 
   select(-month) %>% 
   rename(month = month_name) %>% 
+  mutate(
+    year =
+      as.double(year)
+  ) %>% 
   relocate(year, month)
 
 ```
@@ -175,6 +179,10 @@ snp_df <-
   left_join(snp_df, month_df, by = "month") %>% 
   select(-month) %>% 
   rename(month = month_name) %>% 
+  mutate(
+    year = 
+      as.double(year)
+  ) %>% 
   relocate(year, month)
 
 ```
@@ -200,10 +208,6 @@ unemployment_df <-
   left_join(unemployment_df, month_df, by = "month") %>% 
   select(-month) %>% 
   rename(month = month_name) %>% 
-  mutate(
-    Year = 
-      as.character(Year)
-  ) %>% 
   rename(year = Year) %>% 
   relocate(year, month)
 
@@ -219,3 +223,4 @@ fivethirtyeight_df <-
 
 ```
 
+The pols_df dataset included information on how many governors, senators, and congressional representatives were democrats or republicans at any given time from `r select(pols_df, year) %>% min()` to `r select(pols_df, year) %>% max()`. The snp_df dataset included closing values of the S&P stock index from `r select(snp_df, year) %>% min()` to `r select(snp_df, year) %>% max()` for specific dates of observation during that period. The unemployment_df dataset included monthly percentage of unemployment from `r select(unemployment_df, year) %>% min()` to `r select(unemployment_df, year) %>% max()`. The fivethirtyeight_df dataset includes information from all three datasets, and has `r ncol(fivethirtyeight_df)` columns and `r nrow(fivethirtyeight_df)` rows. It includes data from `r select(fivethirtyeight_df, year) %>% min()` to `r select(fivethirtyeight_df, year) %>% max()`, although some columns have missing values for some years, because the original datasets did not have fully-overlapping time frames.The variables in this dataset include: year, month, number of republican governors ('gov_gop'), number of republican senators ('sen_gop'), number of republican congressional representatives ('rep_gop'), number of democratic governors ('gov_dem'), number of democratic senators ('sen_dem'), number of democratic congressional representatives ('rep_dem'), closing value of S&P stock index ('close'), and monthly percentage unemployment ('unemployment'). The variable 'close' in particular includes the closing value of the S&P stock index on a particular date within the month it is associated with, as opposed to an average closing value for the month or some other value.
