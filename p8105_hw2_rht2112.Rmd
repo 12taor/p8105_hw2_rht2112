@@ -92,7 +92,7 @@ This dataset has `r ncol(nycsubway_df)` columns and `r nrow(nycsubway_df)` rows,
 
 How many distinct stations are there? How many of them are ADA compliant? What proportion of station entrances/exits without vending allow entrance?
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 ada_stations <- 
   distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
   filter(ada == TRUE)
@@ -107,7 +107,7 @@ entry_no_vending <-
   nrow()
 ```
 
-There are `r nrow(distinct(nycsubway_df, line, station_name))` distinct stations, of which `r nrow(ada_stations)` are ADA compliant. The proportion of station entrances/exits without vending that allow entrance is `r entry_no_vending/no_vending`.
+There are `r nrow(distinct(nycsubway_df, line, station_name))` distinct stations, of which `r distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% filter(ada == TRUE) %>% nrow()` are ADA compliant. The proportion of station entrances/exits without vending that allow entrance is `r (filter(nycsubway_df, vending == FALSE) %>% filter(entry == TRUE) %>% nrow())/(filter(nycsubway_df, vending == FALSE) %>% nrow())`.
 
 Reformat data so that route number and route name are distinct variables
 
@@ -129,17 +129,18 @@ nycsubway_df <-
     values_to = "route_name"
   )
 
-A_stations <- 
-  distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
-  filter(route_name == 'A')
+#A_stations <- 
+#  distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
+#  filter(route_name == 'A')
 
-ada_stations <- 
-  distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
-  filter(route_name == 'A') %>% 
-  filter(ada == TRUE)
+#ada_stations <- 
+#  distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% 
+#  filter(route_name == 'A') %>% 
+#  filter(ada == TRUE)
 
 ```
 
+`r distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% filter(route_name == 'A') %>% nrow()` distinct stations serve the A train. Of stations that serve the A train, `r distinct(nycsubway_df, line, station_name, .keep_all = TRUE) %>% filter(route_name == 'A') %>% filter(ada == TRUE) %>% nrow()` are ADA compliant.
 
 # Problem 3
 
